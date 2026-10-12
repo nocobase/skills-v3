@@ -12,7 +12,8 @@ import urllib.request
 
 SOURCE = 'nocobase/nocobase'
 REF = 'v3-develop'
-ALIASES = {'nocobase-plugin-development': 'nocobase-v3-plugin-development'}
+# Compatibility until the source rename lands; the new name passes through unchanged.
+ALIASES = {'nocobase-plugin-development': 'nocobase-app-plugin-development'}
 
 
 def api(path):

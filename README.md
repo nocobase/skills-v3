@@ -14,9 +14,9 @@ Select your Coding Agent when prompted, then start a new session. To install one
 | --- | --- |
 | `nocobase-create-app` | Create and start a NocoBase 3 development application. |
 | `nocobase-app-installer` | Install, upgrade, roll back and check a built application. |
-| `nocobase-v3-plugin-development` | Develop plugins in a NocoBase 3 source workspace. |
+| `nocobase-app-plugin-development` | Develop plugins in a NocoBase 3 source workspace. |
 
-The plugin development Skill is distributed as `nocobase-v3-plugin-development` to avoid overwriting the V2 `nocobase-plugin-development` Skill. Its source directory remains `skills/nocobase-plugin-development`; synchronization changes the distributed directory, frontmatter name and the UI metadata’s Skill invocation. Existing V3 installations made under the old name are not removed automatically: check which version owns that installation before removing it. If you previously installed from the application repository, rerun the new installation command to migrate to this smaller source.
+The plugin development Skill uses `nocobase-app-plugin-development` in both source and distribution. Until the source rename lands, synchronization also accepts the old source name `nocobase-plugin-development` and maps it to the new name; after the rename, it mirrors the Skill unchanged. This keeps the V2 Skill separate. Reinstall to migrate from the earlier `nocobase-v3-plugin-development` distribution name. Old global installations are not removed automatically: check which version owns an installation before removing it.
 
 ## Source and synchronization
 

@@ -27,9 +27,9 @@ class SyncTests(unittest.TestCase):
         data = {'nocobase-plugin-development/SKILL.md': b'---\nname: nocobase-plugin-development\ndescription: Test\n---\n[Guide](references/a.md)\n', 'nocobase-plugin-development/references/a.md': b'Guide', 'nocobase-plugin-development/scripts/a.sh': (b'#!/bin/sh\n', '100755'), 'nocobase-plugin-development/agents/openai.yaml': b'default_prompt: Use $nocobase-plugin-development', 'README.md': b'Not a Skill'}
         with tempfile.TemporaryDirectory() as root:
             module.sync(root, fixture(data).__getitem__)
-            skill = Path(root) / 'skills/nocobase-v3-plugin-development'
-            self.assertIn('name: nocobase-v3-plugin-development', (skill / 'SKILL.md').read_text())
-            self.assertIn('$nocobase-v3-plugin-development', (skill / 'agents/openai.yaml').read_text())
+            skill = Path(root) / 'skills/nocobase-app-plugin-development'
+            self.assertIn('name: nocobase-app-plugin-development', (skill / 'SKILL.md').read_text())
+            self.assertIn('$nocobase-app-plugin-development', (skill / 'agents/openai.yaml').read_text())
             self.assertTrue((skill / 'scripts/a.sh').stat().st_mode & 0o111)
             self.assertFalse((Path(root) / 'skills/README.md').exists())
             module.sync(root, fixture(data, commit='unrelated').__getitem__)
@@ -37,6 +37,22 @@ class SyncTests(unittest.TestCase):
             del data['nocobase-plugin-development/references/a.md']
             module.sync(root, fixture(data, commit='commit2', tree='tree2').__getitem__)
             self.assertFalse((skill / 'references/a.md').exists())
+
+    def test_source_rename_preserves_distribution_and_removes_old_name(self):
+        old = 'nocobase-plugin-development'
+        new = 'nocobase-app-plugin-development'
+        content = b'---\nname: nocobase-plugin-development\ndescription: Test\n---\n'
+        with tempfile.TemporaryDirectory() as root:
+            obsolete = Path(root) / 'skills/nocobase-v3-plugin-development'
+            obsolete.mkdir(parents=True)
+            (obsolete / 'SKILL.md').write_bytes(content)
+            module.sync(root, fixture({old + '/SKILL.md': content}).__getitem__)
+            self.assertFalse(obsolete.exists())
+            target = Path(root) / 'skills' / new / 'SKILL.md'
+            before = target.read_bytes()
+            module.sync(root, fixture({new + '/SKILL.md': before}, commit='renamed', tree='renamed').__getitem__)
+            self.assertEqual(target.read_bytes(), before)
+            self.assertEqual([p.name for p in (Path(root) / 'skills').iterdir()], [new])
 
     def test_download_failure_preserves_previous_mirror(self):
         data = {'one/SKILL.md': b'---\nname: one\ndescription: Test\n---\n'}
