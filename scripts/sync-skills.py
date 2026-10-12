@@ -70,6 +70,8 @@ def snapshot(get=api):
             if name != parts[0]:
                 text = text.replace('name: ' + parts[0], 'name: ' + name, 1)
             content = text.encode('utf-8')
+        if name != parts[0] and parts[1:] == ('agents', 'openai.yaml'):
+            content = content.replace(('$' + parts[0]).encode(), ('$' + name).encode())
         files[dest] = (content, int(item['mode'][-3:], 8))
     return commit['sha'], skill_tree['sha'], files
 

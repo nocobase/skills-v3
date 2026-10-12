@@ -24,11 +24,12 @@ def fixture(content, commit='commit1', tree='tree1'):
 
 class SyncTests(unittest.TestCase):
     def test_alias_references_modes_deletion_and_noop(self):
-        data = {'nocobase-plugin-development/SKILL.md': b'---\nname: nocobase-plugin-development\ndescription: Test\n---\n[Guide](references/a.md)\n', 'nocobase-plugin-development/references/a.md': b'Guide', 'nocobase-plugin-development/scripts/a.sh': (b'#!/bin/sh\n', '100755'), 'README.md': b'Not a Skill'}
+        data = {'nocobase-plugin-development/SKILL.md': b'---\nname: nocobase-plugin-development\ndescription: Test\n---\n[Guide](references/a.md)\n', 'nocobase-plugin-development/references/a.md': b'Guide', 'nocobase-plugin-development/scripts/a.sh': (b'#!/bin/sh\n', '100755'), 'nocobase-plugin-development/agents/openai.yaml': b'default_prompt: Use $nocobase-plugin-development', 'README.md': b'Not a Skill'}
         with tempfile.TemporaryDirectory() as root:
             module.sync(root, fixture(data).__getitem__)
             skill = Path(root) / 'skills/nocobase-v3-plugin-development'
             self.assertIn('name: nocobase-v3-plugin-development', (skill / 'SKILL.md').read_text())
+            self.assertIn('$nocobase-v3-plugin-development', (skill / 'agents/openai.yaml').read_text())
             self.assertTrue((skill / 'scripts/a.sh').stat().st_mode & 0o111)
             self.assertFalse((Path(root) / 'skills/README.md').exists())
             module.sync(root, fixture(data, commit='unrelated').__getitem__)
