@@ -1,0 +1,42 @@
+name: Sync NocoBase 3 Skills
+on:
+  repository_dispatch:
+    types: [skills-updated]
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/**
+      - tests/**
+      - .github/workflows/v3-skills-sync.yml
+permissions:
+  contents: write
+concurrency:
+  group: skills-distribution
+  cancel-in-progress: false
+jobs:
+  sync:
+    if: github.repository == 'nocobase/skills-v3'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Test mirror safeguards
+        run: python3 -m unittest discover -s tests -v
+      - name: Download and validate source Skills
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/sync-skills.py
+      - name: Publish changed Skills
+        run: |
+          git add skills .sync-source.json
+          if git diff --cached --quiet; then
+            echo 'Skills already match the source.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          SOURCE_SHA=$(python3 -c 'import json; print(json.load(open(".sync-source.json"))["commit"])')
+          git commit -m "chore: sync skills from nocobase/nocobase@${SOURCE_SHA}"
+          git push origin HEAD:main
+          echo "Synced source commit: ${SOURCE_SHA}" >> "$GITHUB_STEP_SUMMARY"

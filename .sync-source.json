@@ -1,0 +1,9 @@
+{
+  "repository": "nocobase/nocobase",
+  "ref": "v3-develop",
+  "commit": "5382b6c3ca34f217bbbfb36b2c080052dea30226",
+  "tree": "0dd27121353bed03e77d5c43b17d7f9a5674fa09",
+  "aliases": {
+    "nocobase-plugin-development": "nocobase-v3-plugin-development"
+  }
+}
