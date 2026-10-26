@@ -1,8 +1,8 @@
 {
   "repository": "nocobase/nocobase",
   "ref": "v3-develop",
-  "commit": "8b3095297c6f67326f7ad8005710e52627f16c3f",
-  "tree": "338e4bb5d8806b853ee16b6a914d3379c0be6b72",
+  "commit": "7770b4603e2e83f29f70f4e7270fdbc838102203",
+  "tree": "f2ebf1c70fff336ab37384ab8704ec61432ab5eb",
   "aliases": {
     "nocobase-plugin-development": "nocobase-app-plugin-development"
   }
