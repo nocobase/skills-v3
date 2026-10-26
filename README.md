@@ -5,18 +5,23 @@ Lightweight distribution of the global NocoBase 3 Skills maintained in [`nocobas
 ## Install
 
 ```bash
-npx skills@latest add nocobase/skills-v3 --skill '*' -g
+npx skills@latest add nocobase/skills-v3 --skill nocobase-create-app -g
+npx skills@latest add nocobase/skills-v3 --skill nocobase-app-installer -g
 ```
 
-Select your Coding Agent when prompted, then start a new session. To install one Skill, replace `'*'` with its name. To update, rerun the installation command, or use `npx skills@latest update` to check all tracked Skills for updates.
+Select the entry point you need and your Coding Agent when prompted, then start a new session. Select Skills explicitly instead of using `--skill '*'`, which also installs the legacy plugin-development bridge. To update, rerun the installation command, or use `npx skills@latest update` to check all tracked Skills for updates.
 
 | Skill | Purpose |
 | --- | --- |
 | `nocobase-create-app` | Create and start a NocoBase 3 development application. |
 | `nocobase-app-installer` | Install, upgrade, roll back and check a built application. |
-| `nocobase-app-plugin-development` | Develop plugins in a NocoBase 3 source workspace. |
+| `nocobase-app-plugin-development` | Legacy global migration entry; plugin development uses the full Skill supplied by the App. Do not install this entry for new projects. |
 
-The plugin development Skill uses `nocobase-app-plugin-development` in both source and distribution. Until the source rename lands, synchronization also accepts the old source name `nocobase-plugin-development` and maps it to the new name; after the rename, it mirrors the Skill unchanged. This keeps the V2 Skill separate. Reinstall to migrate from the earlier `nocobase-v3-plugin-development` distribution name. Old global installations are not removed automatically: check which version owns an installation before removing it.
+Plugin development retains the name `nocobase-app-plugin-development`, but the full guide moves to `@nocobase/app-skills` and is synchronized into the App's `.agents/skills/` with compatible releases. The source migration is tracked in [nocobase/nocobase#11178](https://github.com/nocobase/nocobase/pull/11178). Do not assume that a published version already includes it: inspect the installed package and use the App's Core upgrade procedure, not an isolated update of one framework dependency. Source contributors read the package-owned Skill through their repository's local links.
+
+Existing global installations do not disappear automatically. After verifying that the project replacement and its references are present, retire the exact old global installation and its Agent discovery links. Preserve custom content outside Skill discovery directories and unlink entries without deleting their source checkout or project targets. Follow the target release's `nocobase-app-upgrade` migration instructions and start a new Agent session afterward. Do not rely on project-over-global precedence, which differs between Agents. The global bridge forwards by explicit project path rather than invoking its own name again.
+
+Until a compatible project replacement is available, keep an existing full global installation. The bridge reports the missing prerequisite instead of pretending the installed App supports an unpublished feature. Do not remove the differently named V2 `nocobase-plugin-development` Skill as part of this migration. Earlier V3 aliases also require checking their ownership before removal.
 
 ## Source and synchronization
 
@@ -28,7 +33,7 @@ Each run reads the current `v3-develop` head and pins every file to that commit,
 
 The source workflow's paired entry on `nocobase/nocobase`'s default `main` branch dispatches its `v3-develop` implementation for manual runs. The target workflow lives on this repository's own default `main` branch. Land the source implementation before its default-branch entry, and confirm the GitHub App still has access to `skills-v3`. Maintain the distribution workflow and tests here; edit only Skill content in the source repository. Preserve the existing NocoBase 2 Skills repository.
 
-Global Skills become public as soon as they merge into `v3-develop` and the next synchronization succeeds. A Skill describing new package commands must still wait for the corresponding npm release before its source PR merges. Synchronization does not publish packages or bypass that release rule. Application-owned Skills continue to ship in their own npm packages.
+Global Skills become public as soon as they merge into `v3-develop` and the next synchronization succeeds. A Skill describing new package commands must still wait for the corresponding npm release before its source PR merges. Synchronization does not publish packages or bypass that release rule. Application-owned Skills continue to ship in their own npm packages. Coordinate the plugin-development transition so compatible App packages are published before replacing the full global guide: pause mirror synchronization during the source merge and package release, then resume with a manual sync after verifying the released artifacts. Keep the migration PRs pending until that release handoff is scheduled.
 
 ## Maintainer checks
 
