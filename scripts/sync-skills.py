@@ -11,7 +11,8 @@ import tempfile
 import urllib.request
 
 SOURCE = 'nocobase/nocobase'
-REF = 'v3-develop'
+# The NocoBase 3 line; pinned rather than following the source's default branch so a future default switch fails loudly instead of mirroring another major version here.
+REF = 'v3'
 # Compatibility until the source rename lands; the new name passes through unchanged.
 ALIASES = {'nocobase-plugin-development': 'nocobase-app-plugin-development'}
 
