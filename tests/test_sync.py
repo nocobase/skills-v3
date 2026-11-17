@@ -18,7 +18,7 @@ def fixture(content, commit='commit1', tree='tree1'):
         sha = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
         entries.append({'path': name, 'type': 'blob', 'mode': mode, 'sha': sha, 'size': len(data)})
         blobs['git/blobs/' + sha] = {'encoding': 'base64', 'content': base64.b64encode(data).decode()}
-    records = {'commits/v3-develop': {'sha': commit, 'commit': {'tree': {'sha': 'root'}}}, 'git/trees/root': {'tree': [{'path': 'skills', 'type': 'tree', 'sha': tree}]}, 'git/trees/' + tree + '?recursive=1': {'tree': entries}, **blobs}
+    records = {'commits/v3': {'sha': commit, 'commit': {'tree': {'sha': 'root'}}}, 'git/trees/root': {'tree': [{'path': 'skills', 'type': 'tree', 'sha': tree}]}, 'git/trees/' + tree + '?recursive=1': {'tree': entries}, **blobs}
     return records
 
 
